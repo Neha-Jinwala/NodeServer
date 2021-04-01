@@ -17,7 +17,8 @@ exports.create = (req, res) => {
     const cpl = new CPLink({
         _id : req.body._id,
         EmailID: req.body.EmailID,
-        PolicyNumber: req.body.PolicyNumber
+        PolicyNumber: req.body.PolicyNumber,
+        AccountNumber: req.body.AccountNumber
     });
 
     // Save CPLink in the database
@@ -103,22 +104,22 @@ exports.findMany = (req, res) => {
 
 // Delete a CPLink with the specified EmailID in the request
 exports.delete = (req, res) => {
-    CPLink.findOneAndDelete(req.params.EmailID)
+    CPLink.findOneAndDelete(req.params.AccountNumber)
         .then(cpl => {
             if (!cpl) {
                 return res.status(404).send({
-                    message: "CPLink not found with id " + req.params.EmailID
+                    message: "CPLink not found with AccountNumber : " + req.params.AccountNumber
                 });
             }
             res.send({ message: "CPLink deleted successfully!" });
         }).catch(err => {
             if (err.kind === 'ObjectId' || err.name === 'NotFound') {
                 return res.status(404).send({
-                    message: "CPLink not found with id " + req.params.EmailID
+                    message: "CPLink not found with AccountNumber : " + req.params.AccountNumber
                 });
             }
             return res.status(500).send({
-                message: "Could not delete CPLink with id " + req.params.EmailID
+                message: "Could not delete CPLink with AccountNumber :  " + req.params.AccountNumber
             });
         });
 };
