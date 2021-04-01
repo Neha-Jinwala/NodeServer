@@ -2,17 +2,13 @@ module.exports = (app) => {
     const customers = require('../controllers/customers.controller.js');
 
     // Create a new customers
-    app.post('/customers', customers.create);
+    app.post('/customer_create', customers.create);
 
-    // Retrieve all policies
-    app.get('/customers', customers.findAll);
+    app.get('/customer_getall', customers.findAll);
 
-    // Retrieve a single policies with EmailID
-    app.get('/customers/:EmailID', customers.findOne);
+    app.get('/customer_getbyemailid/:EmailID', customers.findByEmailID);
 
-    // Update a policies with EmailID
     app.put('/customer_update', customers.update);
 
-    // Delete a policies with EmailID
-    app.delete('/customers/:EmailID', customers.delete);
+    app.delete('/customer_delete/:_id', customers.delete);
 }
