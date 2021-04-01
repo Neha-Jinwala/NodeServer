@@ -1,4 +1,5 @@
 const CPLink = require('../models/cplink.model.js');
+const IDGenerator = require('../common/IDGenerator.js');
 
 // Create and Save a CPLink
 exports.create = (req, res) => {
@@ -20,7 +21,7 @@ exports.create = (req, res) => {
     }
     // Create a CPLink
     const cpl = new CPLink({
-        _id : req.body._id,
+        _id : IDGenerator.generateCPLinkID(),
         EmailID: req.body.EmailID,
         PolicyNumber: req.body.PolicyNumber,
         AccountNumber:req.body.AccountNumber
@@ -36,7 +37,6 @@ exports.create = (req, res) => {
             });
         });
 };
-
 
 // Retrieve and return all CPLink from the database.
 exports.findAll = (req, res) => {
