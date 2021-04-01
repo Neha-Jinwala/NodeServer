@@ -9,14 +9,11 @@ const cplink = mongoose.Schema({
       },
       
     PolicyNumber: { 
-        type: String, 
-        required: true 
+        type: String
       },
       AccountNumber: { 
-        type: String, 
-        required: true 
-      }
-       
+        type: String
+        } 
 }, {
     timestamps: true
 });

@@ -27,11 +27,10 @@ exports.create = (req, res) => {
     LastName: req.body.LastName,
     EmailID:req.body.EmailID
     });
-   
+
     // Save EmailID in the database
     Custobj.save()
     .then(data => {
-        console.log("created customer with emailid : " + Custobj.EmailID)
         res.send(data);
     }).catch(err => {
         res.status(500).send({
@@ -110,14 +109,14 @@ exports.delete = (req, res) => {
     .then(customers => {
         if(!customers) {
             return res.status(404).send({
-                message: "EmailID 1 not found with id " + req.params.EmailID
+                message: "EmailID  not found with id " + req.params.EmailID
             });
         }
         res.send({message: "EmailID deleted successfully!"});
     }).catch(err => {
         if(err.kind === 'EmailID' || err.name === 'NotFound') {
             return res.status(404).send({
-                message: "EmailID 2 not found with id " + req.params.EmailID
+                message: "EmailID  not found with id " + req.params.EmailID
             });                
         }
         return res.status(500).send({

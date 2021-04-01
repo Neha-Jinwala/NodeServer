@@ -13,12 +13,17 @@ exports.create = (req, res) => {
             message: "Policynumber content can not be empty"
         });
     }
+    if (!req.body.AccountNumber) {
+        return res.status(400).send({
+            message: "AccountNumber content can not be empty"
+        });
+    }
     // Create a CPLink
     const cpl = new CPLink({
         _id : req.body._id,
         EmailID: req.body.EmailID,
         PolicyNumber: req.body.PolicyNumber,
-        AccountNumber: req.body.AccountNumber
+        AccountNumber:req.body.AccountNumber
     });
 
     // Save CPLink in the database
@@ -52,7 +57,7 @@ exports.findAll = (req, res) => {
 
 
 // Find a single CPLink with a EmailID
-exports.findMany = (req, res) => {
+exports.findManyByEmailID = (req, res) => {
     CPLink.find({ 'EmailID': req.params.EmailID })
         .then(cpl => {
             if (!cpl) {
@@ -73,7 +78,27 @@ exports.findMany = (req, res) => {
         });
 };
 
-
+// Find a single CPLink with a AccountNumber
+exports.findManyByAccountNumber = (req, res) => {
+    CPLink.find({ 'AccountNumber': req.params.AccountNumber })
+        .then(cpl => {
+            if (!cpl) {
+                return res.status(404).send({
+                    message: "No CPLinks found for AccountNumber" + req.params.AccountNumber
+                });
+            }
+            res.send(cpl);
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "CPLink not found with AccountNumber " + req.params.AccountNumber
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving CPLink with AccountNumber " + req.params.AccountNumber
+            });
+        });
+};
 // Update a CPLink identified by the policyId in the request
 /* exports.update = (req, res) => {
 
