@@ -11,7 +11,7 @@ module.exports = (app) => {
     app.get('/customers/:EmailID', customers.findOne);
 
     // Update a policies with EmailID
-    app.put('/customers/:EmailID', customers.update);
+    app.put('/customer_update', customers.update);
 
     // Delete a policies with EmailID
     app.delete('/customers/:EmailID', customers.delete);

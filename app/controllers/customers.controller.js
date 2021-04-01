@@ -81,8 +81,10 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
 
     // Find policy and update it with the request body
-    Customers.findByIdAndUpdate(req.params._id, {
-        EmailID: req.body.EmailID
+    Customers.findByIdAndUpdate(req.body._id, {
+        EmailID: req.body.EmailID ,
+        FirstName: req.body.FirstName,
+        LastName: req.body.LastName
     }, { new: true })
         .then(Custobj => {
             if (!Custobj) {
