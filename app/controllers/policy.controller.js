@@ -3,8 +3,7 @@ const CPLink = require('../models/cplink.model.js');
 
 
 
-exports.findByEmailID = (req, res) => {
-    //var returnSet = new Set();
+exports.findByEmailID = (req, res) => {    
     console.log("CPLInk.findByEmailID:Finding CPLinks by email id " + req.params.EmailID)
     CPLink.find({ 'EmailID': req.params.EmailID })
         .then(cplinks => {
@@ -14,20 +13,6 @@ exports.findByEmailID = (req, res) => {
                     message: "No cplinks found with EmailID " + req.params.EmailID
                 });
             }
-            /* for (var i = 0; i < cplinks.length; i++) {
-                let currentCPLink = cplinks[i];
-                if (currentCPLink.AccountNumber != null && currentCPLink.AccountNumber !== '') {
-                    let policies = Policy.findByAccountNumber(currentCPLink.AccountNumber)
-                    policies.forEach(item => returnSet.add(item))
-                    console.log(`CPLInk.findByEmailID: Return array has ${returnSet.length} after search by account number ` + currentCPLink.AccountNumber)
-                } else if (currentCPLink.PolicyNumber != null && currentCPLink.PolicyNumber !== '') {
-                    let policies = Policy.findByPolicyNumber(currentCPLink.PolicyNumber)
-                    policies.forEach(item => returnSet.add(item))
-                    console.log(`CPLInk.findByEmailID: Return array has ${returnSet.length} after search by policy number ` + currentCPLink.PolicyNumber)
-                } else {
-                    console.log(`CPLInk.findByEmailID: Invalid CPLink with id ${currentCPLink._id}. Must have one of Account Number or Policy Number.`)
-                }
-            } */
             let accPolArrayList = Policy.cpLinkAggregator(cplinks);
             let accList = accPolArrayList[0]
             let polList = accPolArrayList[1]
@@ -35,7 +20,7 @@ exports.findByEmailID = (req, res) => {
                 console.log('CPLInk.findByEmailID: Finding policies by account numbers and policy numbers')
                 let pols = Policy.findByAccNumsAndPolNums(accPolArrayList)
                 console.log(`CPLInk.findByEmailID: Found ${pols.length} policies by account numbers and policy numbers`)
-                res.send()
+                res.send(pols)
             } else if (accList != null && accList.length > 0) {
                 console.log('CPLInk.findByEmailID: Finding policies by account numbers')
                 let pols = Policy.findByAccNums(accList)
@@ -74,37 +59,6 @@ exports.findAll = (req, res) => {
             });
         });
 };
-/* 
-Policy.findByAccountNumber = (accountNumber) => {
-    console.log('CPLink.findByAccountNumber: Finding Policies by account number ' + accountNumber)
-    Policy.find({ 'PolicyPeriod.Policy.Account.AccountNumber': accountNumber })
-        .then(policies => {
-            console.log(`CPLink.findByAccountNumber: Found ${policies.length} Policies by account number ` + accountNumber)
-            return policies;
-        }).catch(err => {
-            console.log('CPLink.findByAccountNumber: Some error occurred while retrieving Policies by account number ' + accountNumber)
-            res.status(500).send({
-                message: err.message || 'Some error occurred while retrieving Policies by account number ' + accountNumber
-            });
-            return [];
-        });
-};
-
-Policy.findByPolicyNumber = (policyNumber) => {
-    console.log('CPLink.findByPolicyNumber: Finding Policies by policy number ' + policyNumber)
-    Policy.find({ 'PolicyPeriod.Policy.Account.AccountNumber': policyNumber })
-        .then(policies => {
-            console.log(`CPLink.findByPolicyNumber: Found ${policies.length} Policies by account policy ` + policyNumber)
-            return policies;
-        }).catch(err => {
-            console.log('CPLink.findByPolicyNumber: Some error occurred while retrieving Policies by policy number ' + policyNumber)
-            res.status(500).send({
-                message: err.message || 'Some error occurred while retrieving Policies by policy number ' + policyNumber
-            });
-            return [];
-        });
-};
- */
 
 Policy.findByAccNumsAndPolNums = (accPolsListArray) => {
     console.log('CPLink.findByAccNumsAndPolNums: Starting')
