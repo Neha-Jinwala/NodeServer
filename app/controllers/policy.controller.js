@@ -2,10 +2,10 @@ const Policy = require('../models/policy.model.js');
 const CPLink = require('../models/cplink.model.js');
 
 
-
-exports.findByEmailID = (req, res) => {    
+exports.findByEmailID = (req, res) => {
     console.log("CPLInk.findByEmailID:Finding CPLinks by email id " + req.params.EmailID)
-    CPLink.find({ 'EmailID': req.params.EmailID })
+    const queryCPLinks = CPLink.find()
+    queryCPLinks.where('EmailID').eq(req.params.EmailID).exec()
         .then(cplinks => {
             console.log(`CPLInk.findByEmailID:Found ${cplinks.length} CPLinks by email id ` + req.params.EmailID)
             if (!cplinks) {
@@ -16,22 +16,32 @@ exports.findByEmailID = (req, res) => {
             let accPolArrayList = Policy.cpLinkAggregator(cplinks);
             let accList = accPolArrayList[0]
             let polList = accPolArrayList[1]
+
+            const queryPols = Policy.find()
             if (accList != null && accList.length > 0 && polList != null && polList.length > 0) {
-                console.log('CPLInk.findByEmailID: Finding policies by account numbers and policy numbers')
-                let pols = Policy.findByAccNumsAndPolNums(accPolArrayList)
-                console.log(`CPLInk.findByEmailID: Found ${pols.length} policies by account numbers and policy numbers`)
-                res.send(pols)
+                queryPols.or([{ 'PolicyPeriod.Policy.Account.AccountNumber': { $in: accList } },
+                { 'PolicyPeriod.PolicyNumber': { $in: polList } }])
             } else if (accList != null && accList.length > 0) {
-                console.log('CPLInk.findByEmailID: Finding policies by account numbers')
-                let pols = Policy.findByAccNums(accList)
-                console.log(`CPLInk.findByEmailID: Found ${pols.length} policies by account numbers `)
-                res.send(pols)
+                queryPols.where('PolicyPeriod.Policy.Account.AccountNumber').in(accList)
             } else if (polList != null && polList.length > 0) {
-                console.log('CPLInk.findByEmailID: Finding policies by policy numbers')
-                let pols = Policy.findByPolNums(polList)
-                console.log(`CPLInk.findByEmailID: Found ${pols.length} policies by policy numbers`)
-                res.send(pols)
+                queryPols.where('PolicyPeriod.PolicyNumber').in(polList)
+            } else {
+                return res.status(400).send({
+                    message: "No valid cplinks found with EmailID " + req.params.EmailID
+                });
             }
+            queryPols.exec()
+                .then(policies => {
+                    console.log(`CPLink.findByEmailID: Found ${policies.length} Policies`)
+                    res.send(policies);
+                }).catch(err => {
+                    console.log('CPLink.findByEmailID: Some error occurred while retrieving Policies')
+                    res.status(500).send({
+                        message: err.message || 'Some error occurred while retrieving Policies'
+                    });
+                    return [];
+                });
+
         })
         .catch(err => {
             if (err.kind === 'ObjectId') {
@@ -45,9 +55,7 @@ exports.findByEmailID = (req, res) => {
                 message: "Error retrieving cplinks with EmailID " + req.params.EmailID
             });
         });
-
-};
-
+}
 
 exports.findAll = (req, res) => {
     Policy.find()
@@ -113,7 +121,7 @@ Policy.findByAggregator = (accPolsListArray) => {
     if (accList != null && accList.length > 0 && polList != null && polList.length > 0)
         Policy.find({ $or: [{ 'PolicyPeriod.Policy.Account.AccountNumber': { $in: accList } }, { 'PolicyPeriod.PolicyNumber': { $in: polList } }] })
             .then(policies => {
-                console.log(`CPLink.findByAggregator: Found ${policies.length} Policies by account policy ` + policyNumber)
+                console.log(`CPLink.findByAggregator: Found ${policies.length} Policies by account policy` + policyNumber)
                 return policies;
             }).catch(err => {
                 console.log('CPLink.findByAggregator: Some error occurred while retrieving Policies by policy number ' + policyNumber)
@@ -136,9 +144,9 @@ Policy.cpLinkAggregator = (cplinks) => {
         }
     })
     console.log('CPLink.cpLinkAggregator: Completed aggregation AccountNumbers for querying policies as:')
-    console.log(`CPLink.cpLinkAggregator: ${accNumArr}`)
+    console.log(`CPLink.cpLinkAggregator: ${accNumArr} `)
     console.log('CPLink.cpLinkAggregator: Completed aggregation PolicyNumbers for querying policies as:')
-    console.log(`CPLink.cpLinkAggregator: ${polNumArr}`)
+    console.log(`CPLink.cpLinkAggregator: ${polNumArr} `)
     return [accNumArr, polNumArr]
 
 }
