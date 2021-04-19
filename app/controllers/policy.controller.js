@@ -1,7 +1,34 @@
 const Policy = require('../models/policy.model.js');
-const CPLink = require('../models/cplink.model.js');
+/* const CPLink = require('../models/cplink.model.js'); */
 
 
+exports.findByEmailID = (req, res) => {
+    console.log("CPLInk.findByEmailID:Finding Policies by email id " + req.params.EmailID)
+    const queryPolicies = Policy.find()
+    queryPolicies.where('PolicyPeriod.Policy.Account.AccountHolderContact.EmailAddress1').eq(req.params.EmailID).exec()
+        .then(policies => {
+            console.log(`Policy.findByEmailID:Found ${policies.length} Policies by email id ` + req.params.EmailID)
+            if (!policies) {
+                return res.status(400).send({
+                    message: "No Policies found with EmailID " + req.params.EmailID
+                });
+            }
+            res.send(policies)
+        })
+        .catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(500).send({
+                    message: "No Policies found with EmailID " + req.params.EmailID
+                });
+            }
+            console.log(err.message)
+            console.log(err)
+            return res.status(500).send({
+                message: "Error retrieving Policies with EmailID " + req.params.EmailID
+            });
+        });
+}
+/* 
 exports.findByEmailID = (req, res) => {
     console.log("CPLInk.findByEmailID:Finding CPLinks by email id " + req.params.EmailID)
     const queryCPLinks = CPLink.find()
@@ -56,17 +83,6 @@ exports.findByEmailID = (req, res) => {
             });
         });
 }
-
-exports.findAll = (req, res) => {
-    Policy.find()
-        .then(policies => {
-            res.send(policies);
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while retrieving policy."
-            });
-        });
-};
 
 Policy.findByAccNumsAndPolNums = (accPolsListArray) => {
     console.log('CPLink.findByAccNumsAndPolNums: Starting')
@@ -151,5 +167,15 @@ Policy.cpLinkAggregator = (cplinks) => {
 
 }
 
+ */
 
-
+exports.findAll = (req, res) => {
+    Policy.find()
+        .then(policies => {
+            res.send(policies);
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving policy."
+            });
+        });
+};
