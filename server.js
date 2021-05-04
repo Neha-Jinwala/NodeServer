@@ -43,6 +43,7 @@ app.get('/', (req, res) => {
 require('./app/routes/policy.routes.js')(app);
 require('./app/routes/customers.routes.js')(app);
 require('./app/routes/cplink.routes.js')(app);
+require('./app/routes/tpolicy.routes.js')(app);
 //require('./app/routes/customer_policy_link.routes.js')(app);
 
 
