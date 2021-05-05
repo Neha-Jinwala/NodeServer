@@ -20,6 +20,7 @@ app.use(bodyParser.json())
 // Configuring the database
 const dbConfig = require('./config/database.config.js');
 const mongoose = require('mongoose');
+const passport = require('passport');
 
 mongoose.Promise = global.Promise;
 
@@ -33,6 +34,11 @@ mongoose.connect(dbConfig.url, {
     process.exit();
 });
 
+// Passport middleware
+app.use(passport.initialize());
+
+// Passport config
+require('./config/passport')(passport);
 
 // define a simple route
 app.get('/', (req, res) => {
@@ -43,9 +49,8 @@ app.get('/', (req, res) => {
 require('./app/routes/policy.routes.js')(app);
 require('./app/routes/customers.routes.js')(app);
 require('./app/routes/cplink.routes.js')(app);
-require('./app/routes/tpolicy.routes.js')(app);
+require('./app/routes/users.routes.js')(app);
 //require('./app/routes/customer_policy_link.routes.js')(app);
-
 
 // listen for requests
 const portNum =5001
