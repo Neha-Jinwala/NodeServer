@@ -5,7 +5,7 @@ const TPolicy = require('../models/tpolicy.model.js');
 exports.findByEmailID = (req, res) => {
     console.log("CPLInk.findByEmailID:Finding Policies by email id " + req.params.EmailID)
     const queryPolicies = TPolicy.find()
-    queryPolicies.where('PolicyPeriod.Account.HolderEmailID').eq(req.params.EmailID).exec()
+    queryPolicies.where('Policy.Account.HolderEmailID').eq(req.params.EmailID).exec()
         .then(policies => {
             console.log(`Policy.findByEmailID:Found ${policies.length} Policies by email id ` + req.params.EmailID)
             if (!policies) {
